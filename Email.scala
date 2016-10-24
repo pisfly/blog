@@ -50,7 +50,7 @@ object EmailSender {
     println(s"$to -> $body")
   }
 
-  def disclaimer =
+  def disclaimer(str: String): String = str +
     """
       |************************************************************************
       |The information contained in this message or any of its attachments may be confidential and is intended for the exclusive use of the addressee(s).
@@ -60,10 +60,12 @@ object EmailSender {
       |This email and any response may be monitored by BigBadAssCorp to be in compliance with BigBadAssCorp's global policies and standards
     """.stripMargin
 
-  def emailMaker(func: => String) = {
+
+  def emailMaker(func:String => String) = {
     (email: Email) => {
-      val strToAppend = func
-      EmailImpl(email.body + strToAppend)
+      new Email {
+        override def body: String = func(email.body)
+      }
     }
   }
 
